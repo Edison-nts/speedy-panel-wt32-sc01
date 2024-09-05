@@ -37,8 +37,8 @@ typedef File file_t;
 #define SD_SECTOR_SIZE    512 // Standard SD sector size
 #define SD_LOG_ENTRY_SIZE 127    /**< The size of the live data packet used by the SD card.*/
 // #define RING_BUF_CAPACITY (SD_LOG_ENTRY_SIZE * 10) //Allow for 10 entries in the ringbuffer. Will need tuning
-#define RING_BUF_CAPACITY (SD_SECTOR_SIZE * 2) // o dobro de 1 block
-#define SD_LOG_FILE_SIZE  RING_BUF_CAPACITY * 256 //Default 10mb file size
+#define RING_BUF_CAPACITY (SD_SECTOR_SIZE * 4U) // o dobro de 1 block
+#define SD_LOG_FILE_SIZE  1024 * 1024 * 10 //Default 10mb file size
 
 #define SD_CS_PIN 41
 
@@ -120,7 +120,6 @@ void beginSDLogging(statuses* status)
     } 
 
     retOpen = logFile.preAllocate(SD_LOG_FILE_SIZE);
-    delay(100);
     debug.printf("beginSDLogging - preAllocate %s \r\n", retOpen ? "OK" : "ERROR");
     if (!retOpen) 
     {
@@ -129,11 +128,11 @@ void beginSDLogging(statuses* status)
       status->sdCardStatus = SD_STATUS_ERROR_NO_SPACE;
       return;
     }
-    delay(100);
   
     debug.println("beginSDLogging - log started");
     status->sdCardblockCount = 0U;
     rb.print(header);
+    rb.sync();
 
     delay(100);
     debug.println("beginSDLogging - header printted");
@@ -261,6 +260,8 @@ void writeSDLogEntry(statuses* status, uint32_t timeMs)
         rb.printf("%4.1f\t", 0.00);    // Torque				0.0
         rb.println();
 
+        rb.sync();
+
         // debug.printf("writeSDLogEntry - entry: %d , time: %d ms \r\n", status->sdCardblockCount, (timeMs - logStartTime));
 
         status->sdCardblockCount++;
@@ -272,8 +273,8 @@ void writeSDLogEntry(statuses* status, uint32_t timeMs)
         if (status->sdCardblockCount == 0)
         {
             debug.println("writeSDLogEntry - file sync process");
-             rb.sync();
-            logFile.sync(); 
+             // rb.sync();
+            // logFile.sync(); 
         }
 
 }
