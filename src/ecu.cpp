@@ -34,7 +34,7 @@ void enviarRequestRead(statuses* status, uint8_t blockNum)
 
 void readSerialEcu(statuses* status)
 {
-  status->receiveCount++;
+  
   unsigned long last = micros();
   uint8_t index = 0;
   char cmd = SerialEcu.read();
@@ -93,11 +93,13 @@ void readSerialEcu(statuses* status)
       enviarRequestRead(status, 1);
     }
     else {
+      status->receiveCount++;
       readSerialEcu_r(status, buffer);
     }
     
   }
   else if (cmd == 'n') {
+    status->receiveCount++;
     readSerialEcu_n(status, buffer);
   }
   
