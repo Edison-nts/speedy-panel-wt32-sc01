@@ -128,10 +128,22 @@ void showData(statuses* status)
   else if (telaIndex == 4) {
 
     if (lastSdStatus != status->sdCardStatus) {
-      dsp_00.setBackground(status->sdCardStatus == SD_STATUS_ACTIVE ? dsp_red : dsp_gray, false);
+      lastSdStatus = status->sdCardStatus;
+      if (status->sdCardStatus == SD_STATUS_ACTIVE)
+        dsp_00.setBackground(dsp_red, false);
+      else if (status->sdCardStatus == SD_STATUS_READY)
+        dsp_00.setBackground(dsp_green, false);
+      else 
+        dsp_00.setBackground(dsp_gray, false);
     }
-    dsp_00.printf("%s", status->sdCardStatus == SD_STATUS_ACTIVE ? "Stop": "Start");
-    
+
+    if (status->sdCardStatus == SD_STATUS_ACTIVE)
+      dsp_00.printf("%s", "Stop");
+    else if (status->sdCardStatus == SD_STATUS_READY)
+      dsp_00.printf("%s", "Start");
+    else 
+      dsp_00.printf("%s", "Error");
+ 
     dsp_01.showBit(BIT_CHECK(status->engine, 0), 0); // running
     dsp_01.showBit(BIT_CHECK(status->engine, 1), 1); // crank
     dsp_01.showBit(BIT_CHECK(status->engine, 3), 2); // warmup
@@ -157,8 +169,6 @@ void showData(statuses* status)
     dsp_11.showBit(status->sdCardStatus == SD_STATUS_ERROR_WRITE_FAIL, 3); // w-error
     
   }
-
-  lastSdStatus = status->sdCardStatus;
 
   lcd.setCursor(380, 30);
   dsp_setFont(&lcd, font_12);

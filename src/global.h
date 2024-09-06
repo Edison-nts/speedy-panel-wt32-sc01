@@ -178,7 +178,8 @@ struct statuses {
   volatile bool currentStatusChanged;
   volatile bool requestLogChange;
   uint8_t sdCardStatus;
-  volatile uint8_t sdCardblockCount;
+  volatile bool requestLogStopWrite;
+  volatile uint16_t sdCardblockCount;
 };
 
   

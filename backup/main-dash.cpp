@@ -65,10 +65,10 @@ void display_loop(void *args) {
     if (currentStatus.requestLogChange) {
       currentStatus.requestLogChange = false;
       if (currentStatus.sdCardStatus == SD_STATUS_ACTIVE) {
-        endSDLogging(&currentStatus);
+        currentStatus.requestLogStopWrite = true;
       }
       else if (currentStatus.sdCardStatus == SD_STATUS_READY) {
-        beginSDLogging(&currentStatus);
+        currentStatus.requestLogStopWrite = true;
       }
 
     }
